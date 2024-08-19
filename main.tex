@@ -1,0 +1,49 @@
+\documentclass[a5paper, 10pt, twoside]{article}
+\usepackage{import}
+\usepackage{preamble}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \topskip0pt
+    \vspace*{\fill}
+    
+    {\sl\large Классы при механико-математическом факультете МГУ} \medskip
+
+    {\sl\large Школа 54}
+
+    \vspace*{4cm}
+
+    \begin{spacing}{1}
+        \LARGE\bfseries Записи лекций Летней Школы\par по Программированию
+    \end{spacing}
+    \smallskip
+    
+    {\Large С.\,С.\,Князевский}
+    \vspace{.6cm}
+    
+    \includegraphics[width=0.4\textwidth]{img/logo.jpg}
+
+    \vspace*{4cm}
+
+    {\large Красновидово}\medskip
+    
+    {\large 10 --- 24 августа, 2024 год}
+    \vspace*{\fill}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\import{junior/}{linear_algos.tex}
+\import{senior/}{sqrt_optimization.tex}
+\import{junior/}{linear_structs.tex}
+\import{senior/}{seg_tree.tex}
+\import{junior/}{bfs.tex}
+\import{senior/}{dsu.tex}
+\import{junior/}{dfs.tex}
+\import{senior/}{dyn_prog.tex}
+\import{junior/}{bits_opers.tex}
+
+\end{document}

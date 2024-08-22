@@ -16,7 +16,8 @@
 vector<int> p(n + 1); p[0] = 0;
 for (int i = 1; i <= n; ++i)
     p[i] = p[i - 1] + a[i - 1]; // $p_0 = 0,\ p_i = a_0 + \ldots + a_{i - 1}$.
-int m; cin >> m;
+int m;
+cin >> m;
 while (m--)
 {
     int l, r;

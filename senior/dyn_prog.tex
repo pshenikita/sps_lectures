@@ -31,11 +31,7 @@
     \end{cases}
 \]
 
-Можем вести цикл по левым и правым границам, заполняя наш массив за $O(n^2)$ по указанной формуле.
-
-\begin{remark}
-    Заметим, что быстрее было бы вести динамику не по левым и правым границам, а по левым границам и длинам. Это связано с тем, что каждая строка массива $d$ заполнялась бы последовательно, а доступ к памяти в таком случае предоставляется быстрее.
-\end{remark}
+Можем вести цикл по левым границам и длинам отрезков, заполняя наш массив за $O(n^2)$ по указанной формуле.
 
 \subsection{Динамика по поддеревьям}
 
@@ -52,7 +48,7 @@
 
 \begin{minted}[linenos, mathescape]{cpp}
 vector<vector<int>> adj; // список смежности дерева $G$
-vector<int> d;
+vector<int> d(n, 1); // пока в поддереве $u$ одна вершина - $u$
 vector<int> p; // храним предков
 vector<int> cnt_sons; // храним число сыновей
 
@@ -61,22 +57,18 @@ q.push(0);
 while (!q.empty())
 {
     int u = q.front(); q.pop();
-    for (int v : adj[v])
-    {
+    for (int v : adj[u])
         if (v != p[u])
         {
             p[v] = u;
-            ++cnt_sons;
+            ++cnt_sons[u];
+            q.push(v);
         }
-    }
 }
 
 for (int u = 0; u < n; ++u)
-{
     if (!cnt_sons[u]) // тогда $u$ - лист
         q.push(u);
-    d[u] = 1; // пока в поддереве $u$ одна вершина - $u$
-}
 
 int ans = 0;
 while (!q.empty())
@@ -100,14 +92,14 @@ while (!q.empty())
     В данном взвешенном графе $G$ найти минимальный по весу гамильтонов путь (если он существует).
 \end{problem}
 
-Обозначим через $w_{u, v}$ вес ребра $(u, v)$ (удобно считать $w_{u, v} = +\infty$, если ребра $(u, v)$ не существует). Пусть $d_{\{v_0, v_1, \ldots, v_{k - 1}\}, v_j}$ ($0 \leqslant j < k$) хранит вес минимального гамильтонова пути, проходящего через все вершины $\{v_0, v_1, \ldots, v_{k - 1}\}$, оканчивающегося в вершине $v_i$.
+Обозначим через $w_{u, v}$ вес ребра $(u, v)$ (удобно считать $w_{u, v} = +\infty$, если ребра $(u, v)$ не существует). Пусть $d_{\{v_0, v_1, \ldots, v_{k - 1}\}, v_j}$ ($0 \leqslant j < k$) хранит вес минимального гамильтонова пути, проходящего через все вершины $\{v_0, v_1, \ldots, v_{k - 1}\}$, оканчивающегося в вершине $v_j$.
 
 Тогда база выглядит как $d_{\{u\}, u} = 0$ для всех $u$, а рекуррентная формула имеет вид
 \begin{multline*}
-    d_{\{v_0, v_1, \ldots, v_{k - 1}\}, v_j} = \min\{d_{\{v_1, v_2, \ldots, v_k\}, v_0} + w_{v_j, v_0},\\ d_{v_0, v_2, \ldots, v_{k - 1}} + w_{v_j, v_1}, \ldots, d_{\{v_0, v_1, \ldots, \widehat{v_{j - 1}}, v_j, \ldots, v_{k - 1}\}, v_{j - 1}} + w_{v_j, v_{j - 1}},\\ d_{\{v_0, v_1, \ldots,  v_j, \widehat{v_{j + 1}}, \ldots, v_{k - 1}\}, v_{j - 1}} + w_{v_j, v_{j + 1}}, \ldots, d_{\{v_0, v_1, \ldots, v_{k - 2}\}, v_{k - 1}} + w_{v_j, v_{k - 1}}\}
+    d_{\{v_0, v_1, \ldots, v_{k - 1}\}, v_j} = \min\{d_{\{v_0, v_1, \ldots, \widehat{v_j}, \ldots, v_{k - 1}\}, v_0} + w_{v_j, v_0},\\ d_{\{v_0, v_1, \ldots, \widehat{v_j}, \ldots, v_{k - 1}\}, v_1} + w_{v_j, v_1}, \ldots, d_{\{v_0, v_1, \ldots, \widehat{v_j}, \ldots, v_{k - 1}\}, v_{j - 1}} + w_{v_j, v_{j - 1}},\\ d_{\{v_0, v_1, \ldots, \widehat{v_j}, \ldots, v_{k - 1}\}, v_{j + 1}} + w_{v_j, v_{j + 1}}, \ldots, d_{\{v_0, v_1, \ldots, \widehat{v_j}, \ldots, v_{k - 1}\}, v_{k - 1}} + w_{v_j, v_{k - 1}}\}
 \end{multline*}
 
-Перебор подмножеств будем реализовывать с помощью \textit{масок}. Идея в том, что любое подмножество $\mathcal{S} \subseteq \mathcal{M} \vcentcolon = \{1, 2, \ldots, n\}$ мощности $n$ задаётся битовым числом $b(\mathcal{S}) \vcentcolon = \overline{b_n\ldots b_2b_1}$, где
+Перебор подмножеств будем реализовывать с помощью \textit{масок}. Идея в том, что любое подмножество $\mathcal{S} \subseteq \mathcal{M} \vcentcolon = \{0, 1, \ldots, n - 1\}$ мощности $n$ задаётся битовым числом $b(\mathcal{S}) \vcentcolon = \overline{b_{n - 1}\ldots b_1b_0}$, где
 \[
     b_i =
     \begin{cases}
@@ -129,8 +121,8 @@ for (unsigned int mask = 1; mask < (1 << n); ++mask)
             {
                 for (int j = 0; j < n; ++j)
                     if (j != i && mask & (1 << j))
-                        d[mask][i] = min(d[mask][i], \
-                        d[mask & (1 << j)][j] + w[i][j]);
+                        d[mask][i] = min(d[mask][i],
+                        d[mask ^ (1 << j)][j] + w[i][j]);
             }
         }
     }

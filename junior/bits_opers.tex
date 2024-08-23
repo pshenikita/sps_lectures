@@ -14,20 +14,107 @@
 
 \begin{definition}
     \begin{enumerate}[nolistsep]
-        \item \textit{Конъюнкция} --- побитовое <<и>> ($x \wedge y$);
-        \item \textit{Дизъюнкция} --- побитовое <<или>> ($x \vee y$);
-        \item \textit{XOR} --- сложение $\bmod\;2$ ($x \oplus y$);
+        \item \textit{Конъюнкция} --- побитовое <<и>> ($x\;\&\;y$);
+        \item \textit{Дизъюнкция} --- побитовое <<или>> ($x\;\vert\;y$);
+        \item \textit{XOR} --- сложение $\bmod\;2$ ($x \wedge y$);
         \item \textit{Инверсия} --- побитовое отрицание ($\sim x$);
         \item \textit{Побитовый сдвиг вправо} --- умножение на $2^k$ ($x\;\texttt{<<}\;k$);
         \item \textit{Побитовый сдвиг влево} --- целочисленное деление на $2^k$ ($x\;\texttt{>>}\;k$).
     \end{enumerate}
 \end{definition}
 
+\noindent
+\begin{minipage}{.25\textwidth}
+$$\def\arraystretch{.8}
+\begin{array}{r}
+\&
+\begin{array}{r}
+110100\\
+
+100111\\
+\end{array}\\
+\hline
+\def\arraystretch{.2}
+\begin{array}{r}\\
+100100
+\end{array}
+\end{array}
+$$
+\end{minipage}
+\begin{minipage}{.25\textwidth}
+$$\def\arraystretch{.8}
+\begin{array}{r}
+|
+\begin{array}{r}
+110100\\
+
+100111\\
+\end{array}\\
+\hline
+\def\arraystretch{.2}
+\begin{array}{r}\\
+110111
+\end{array}
+\end{array}
+$$
+\end{minipage}
+\begin{minipage}{.25\textwidth}
+$$\def\arraystretch{.8}
+\begin{array}{r}
+\wedge
+\begin{array}{r}
+110100\\
+
+100111\\
+\end{array}\\
+\hline
+\def\arraystretch{.2}
+\begin{array}{r}\\
+010011
+\end{array}
+\end{array}
+$$
+\end{minipage}
+\begin{minipage}{.25\textwidth}
+$$\def\arraystretch{.8}
+\begin{array}{r}
+\begin{array}{r}
+{}\\
+\sim110100
+\end{array}\\
+\hline
+\def\arraystretch{.2}
+\begin{array}{r}\\
+001011
+\end{array}
+\end{array}
+$$
+\end{minipage}
+
 \problem{Определить значение $i$-го бита числа $x$}
 
-\solution{$x \wedge (1\;\texttt{<<}\;i)$}
+\solution{$x\;\&\;(1\;\texttt{<<}\;i)$}
 
 \problem{Инвертировать $i$-й бит числа $x$}
 
-\solution{$x \oplus (1\;\texttt{<<}\;i)$}
+\solution{$x \wedge (1\;\texttt{<<}\;i)$}
+
+\subsection{Битовые маски}
+
+Заметим, что любое множество (из не более чем 32 элементов) можно задавать двоичной строкой (элементы кодируются $1$ на соответствующих местах). Например, строка $0011001$ задаёт множество $\{0, 3, 4\}$. Заметим, что это даёт нам возможность быстро использовать операции над множествами (им соответствую операции над двоичными числами). Пусть $f$~---~функция, которая по битовой маске строит соответствующее ей множество, $A$ и $B$ --- некоторые множества. Некоторые примеры операций:
+
+$$
+    \begin{array}{l}
+    A \cap B \leftarrow f^{-1}(A)\; \&\; f^{-1}(B),\\
+    A \cup B \leftarrow f^{-1}(A)\; |\; f^{-1}(B),\\
+    A\:\Delta\:B \leftarrow f^{-1}(A)\; \wedge\; f^{-1}(B),\\
+    \overline{A} \leftarrow\ \sim f^{-1}(A),\\
+    A \setminus B \leftarrow f^{-1}(A)\; \&\; (\sim f^{-1}(B)).
+\end{array}$$
+
+\subsection{Bitset-ы}
+
+Т.\,к. часто приходится работать с большими множествами (количество элементов в которых больше 32 и даже 64), нам не подходят для хранения обычные числовые типы вроде \texttt{int} и \texttt{long long}. Как раз для этого существует \texttt{bitset<SIZE>} (\texttt{SIZE} --- обязательно константа). Он предоставляет все операции над двоичными числами (единственное условие --- они должны быть одинакового размера).
+
+Помимо увеличенного размера двоичных чисел, \texttt{bitset}-ы нужны, чтобы уменьшать время работы операций, так как в нём биты хранятся не отдельно, а в составе байта (группами по 8 штук), поэтому операции с~\texttt{bitset}-ом работают с очень маленькой константой (как раз в 8 раз меньше, чем при применении битовых операций к обычным числам).
 
